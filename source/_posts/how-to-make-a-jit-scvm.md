@@ -3,14 +3,13 @@ title: 如何实现一个带JIT的Scratch虚拟机
 mermaid: true
 ---
 
-flow
 众所周知，由于 Scratch 原生虚拟机的实现非常暴力，因此 Scratch 的虚拟机一直是众多有高性能需求的 Scratch 作品的噩梦。你甚至能看到在极少的循环内执行延迟就已达到了惊人的 300ms。为此，各路 Scratcher 争相拿出了解决方案（例如 forkphorus, TurboWarp 等），其中最普遍的思路就是使用浏览器自带的 JavaScript 引擎来把积木转换成原生代码再运行。（当然也有用其他语言重写虚拟机的，本篇不细讲）本文将结合本人编写 JIT 功能的经验，谈谈如何在原有的 Scratch 虚拟机上添加一个 JIT 功能。
 ![](https://s6.jpg.cm/2021/11/12/Iae5CH.gif)
 *PS：本文仅提供思路，具体代码需要各位读者自行实践。*
 ## 怎么生成
 我们分析源码可得，Scratch 的运行逻辑大概是这样的：
 ```mermaid
-flowchart LR
+graph
 runtime-->|从 target 读取 block 创建|Thread(FRESH)
 Thread(FRESH)-->|开始运行|Thread(RUNNING)
 Thread(RUNNING)-->execute
