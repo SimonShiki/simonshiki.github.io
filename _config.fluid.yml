@@ -916,21 +916,21 @@ links:
   # Member item of page
   items:
     - {
-      title: "Fluid Blog",
-      intro: "主题博客",
-      link: "https://hexo.fluid-dev.com/",
+      title: "TeChen's blog",
+      intro: "技术宅的博客",
+      link: "https://tehchen.xyz/",
       avatar: "/img/favicon.png"
     }
     - {
-      title: "Fluid Docs",
-      intro: "主题使用指南",
-      link: "https://hexo.fluid-dev.com/docs/",
+      title: "Alex Cui's Blog",
+      intro: "AlexCui 的博客",
+      link: "https://alexcui03.github.io/",
       avatar: "/img/favicon.png"
     }
     - {
-      title: "Fluid Repo",
-      intro: "主题 GitHub 仓库",
-      link: "https://github.com/fluid-dev/hexo-theme-fluid",
+      title: "Eden's Blog",
+      intro: "Eden 的博客",
+      link: "https://edenqwq.github.io/",
       avatar: "/img/favicon.png"
     }
 

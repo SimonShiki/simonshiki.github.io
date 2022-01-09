@@ -8,17 +8,17 @@ mermaid: true
 *PS：本文仅提供思路，具体代码需要各位读者自行实践。*
 ## 怎么生成
 我们分析源码可得，Scratch 的运行逻辑大概是这样的：
-```mermaid
-graph
-runtime-->|从 target 读取 block 创建|Thread(FRESH)
-Thread(FRESH)-->|开始运行|Thread(RUNNING)
-Thread(RUNNING)-->execute
-Thread(RUNNING)-->|进入“休息”时间|Thread(YIELD_TICK)
-Thread(YIELD_TICK) -->|完成该线程的使命|Thread(DONE)
-sequencer-->|统一由 sequencer 进行调度管理|Thread(RUNNING)
-sequencer-->|统一由 sequencer 进行调度管理|Thread(YIELD_TICK)
-sequencer-->|统一由 sequencer 进行调度管理|Thread(DONE)
-```
+{% mermaid %}
+graph LR
+    A(Runtime) -->|从 target 读取 block 创建| B(Thread - FRESH)
+    B -->|开始运行| C[Thread - RUNNING]
+    C -->G[Execute]
+    C -->|进入“休息”时间| D[Thread - YIELD_TICK]
+    D -->|完成该线程的使命| E[Thread - DONE]
+    F(sequencer) -->|进行调度管理| C
+    F -->|进行调度管理| D
+    F -->|进行调度管理| E
+{% endmermaid %}
 由以上流程我们可知，我们要抢先在线程进入运行环节前生成相关代码，所以我们要在生成完新鲜的 Thread 后立刻开始生成。
 生成的最基本思路便是取出当前 Thread 的积木容器，并挨个遍历积木并生成相应代码。比如走( )步积木的实现就理所应当的如下所示：
 ```javascript
