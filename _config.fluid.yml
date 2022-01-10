@@ -700,7 +700,7 @@ gitalk:
   clientSecret: dfe313545a8787fb84f3d63ec993e938f131081b
   repo: sinangentoo.github.io
   owner: SinanGentoo
-  admin: ['name']
+  admin: ['SinanGentoo']
   language: zh-CN
   labels: ['Gitalk']
   perPage: 10
