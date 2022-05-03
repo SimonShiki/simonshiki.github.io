@@ -4,16 +4,16 @@
 
 # Site
 title: 楠的博客
-subtitle: "SinanGentoo's blog"
+subtitle: "SimonShiki's blog"
 description: '本来无一物，何处惹尘埃'
 keywords:
-author: SinanGentoo
+author: SimonShiki
 language: zh-CN
 timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://example.com
+url: https://simonshiki.github.io/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -116,5 +116,5 @@ theme: fluid
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: git@github.com:SinanGentoo/sinangentoo.github.io.git
+  repo: git@github.com:SimonShiki/simonshiki.github.io.git
   branch: view
