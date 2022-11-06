@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.jpg">
+  <link rel="icon" href="/img/favicon.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="SimonShiki">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="大家好，我是司南。随着时代的进步和发展，html或者是自带富文本编辑都变得越来麻烦或臃肿了。因此，人们发明了一种新的，简单易学的，通用的富文本语言：Markdown。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Markdown - 简单富文本语言介绍">
+<meta property="og:url" content="https://blog.shiki.online/2021/01/10/markdown/index.html">
+<meta property="og:site_name" content="Simon 的博客">
+<meta property="og:description" content="大家好，我是司南。随着时代的进步和发展，html或者是自带富文本编辑都变得越来麻烦或臃肿了。因此，人们发明了一种新的，简单易学的，通用的富文本语言：Markdown。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-4dc882e245ca3af70f2e7361d5bef282_720w.jpg">
+<meta property="og:image" content="https://i.niupic.com/images/2020/03/07/6YNU.jpg">
+<meta property="article:published_time" content="2021-01-10T23:48:33.000Z">
+<meta property="article:modified_time" content="2022-11-06T14:00:28.519Z">
+<meta property="article:author" content="SimonShiki">
+<meta property="article:tag" content="tutorial">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://pic1.zhimg.com/80/v2-4dc882e245ca3af70f2e7361d5bef282_720w.jpg">
+  
+  
+  <title>Markdown - 简单富文本语言介绍 | Simon 的博客</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.shiki.online","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Simon 的博客" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Simon 的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/post.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Markdown - 简单富文本语言介绍">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-01-10 23:48" pubdate>
+        2021年1月10日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      14 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Markdown - 简单富文本语言介绍</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2022年11月6日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <p>　　大家好，我是司南。随着时代的进步和发展，html或者是自带富文本编辑都变得越来麻烦或臃肿了。因此，人们发明了一种新的，简单易学的，通用的富文本语言：<strong>Markdown</strong>。<span id="more"></span></p>
+<h2 id="什么是Markdown"><a href="#什么是Markdown" class="headerlink" title="什么是Markdown"></a>什么是Markdown</h2><p>　　Markdown是一种可以使用普通文本编辑器编写的标记语言，通过简单的标记语法，它可以使普通文本内容具有一定的格式。<br>　　Markdown的语法简洁明了、学习容易，而且功能比纯文本更强，因此有很多人用它写博客。世界上最流行的博客平台WordPress和大型CMS如Joomla、Drupal都能很好的支持Markdown。完全采用Markdown编辑器的博客平台有Ghost和Typecho（就是我现在用的这个博客啦）。<br><img src="https://pic1.zhimg.com/80/v2-4dc882e245ca3af70f2e7361d5bef282_720w.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Markdown-初阶使用"><a href="#Markdown-初阶使用" class="headerlink" title="Markdown 初阶使用"></a>Markdown 初阶使用</h2><p>　　对于一般人写博客来讲，Markdown其实用到的并不多，下面我来讲讲最基本的Markdown语法。</p>
+<h3 id="1-粗体"><a href="#1-粗体" class="headerlink" title="1. 粗体"></a>1. 粗体</h3><p>粗体只需要将需要加粗的文本两边加上两个*就好了，就像这样：<code>**我要变粗！**</code>，效果就像这样： <strong>我要变粗！</strong> 怎么样，是不是很简单？</p>
+<h3 id="2-斜体"><a href="#2-斜体" class="headerlink" title="2.斜体"></a>2.斜体</h3><p>斜体更简单，只需要将需要加粗的文本两边加上一个*就好了，就像这样：<code>*我要变弯！*</code>，效果就像这样：<br> <em>我要变弯！</em> <del>（我怀疑我在ghs）</del></p>
+<h3 id="3-删除线"><a href="#3-删除线" class="headerlink" title="3.删除线"></a>3.删除线</h3><p>不多说，看示例：</p>
+<figure class="highlight haml"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br></pre></div></td><td class="code"><pre><code class="hljs haml">~~我能吞下玻璃而不伤身体~~<br></code></pre></td></tr></table></figure>
+<p>效果如下：<br><del>我能吞下玻璃而不伤身体</del></p>
+<h3 id="4-一级到六级标题"><a href="#4-一级到六级标题" class="headerlink" title="4.一级到六级标题"></a>4.一级到六级标题</h3><p>这个只需要在文本前加#号与空格就行了，下面举个栗子：</p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs clean"># 我是一号标题<br>## 我是二号标题<br>### 我是三号标题<br>#### 我是四号标题<br>##### 我是五号标题<br>###### 我是六号标题<br></code></pre></td></tr></table></figure>
+<p>效果如下：</p>
+<h1 id="我是一号标题"><a href="#我是一号标题" class="headerlink" title="我是一号标题"></a>我是一号标题</h1><h2 id="我是二号标题"><a href="#我是二号标题" class="headerlink" title="我是二号标题"></a>我是二号标题</h2><h3 id="我是三号标题"><a href="#我是三号标题" class="headerlink" title="我是三号标题"></a>我是三号标题</h3><h4 id="我是四号标题"><a href="#我是四号标题" class="headerlink" title="我是四号标题"></a>我是四号标题</h4><h5 id="我是五号标题"><a href="#我是五号标题" class="headerlink" title="我是五号标题"></a>我是五号标题</h5><h6 id="我是六号标题"><a href="#我是六号标题" class="headerlink" title="我是六号标题"></a>我是六号标题</h6><p><del>（虽然很不想吐槽六号标题连一般文本都不如了）</del></p>
+<h3 id="4-插入链接与图片"><a href="#4-插入链接与图片" class="headerlink" title="4.插入链接与图片"></a>4.插入链接与图片</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">[这是一个链接，点我进入某<span class="hljs-number">404</span>小公司搜索引擎](https:<span class="hljs-regexp">//</span>www.google.com/)<br>![这是关于图片的描述，罗小黑太可爱了awsl](https:<span class="hljs-regexp">//i</span>.niupic.com<span class="hljs-regexp">/images/</span><span class="hljs-number">2020</span><span class="hljs-regexp">/03/</span><span class="hljs-number">07</span>/<span class="hljs-number">6</span>YNU.jpg)<br></code></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://www.google.com/">这是一个链接，点我进入某404小公司搜索引擎</a><br><img src="https://i.niupic.com/images/2020/03/07/6YNU.jpg" srcset="/img/loading.gif" lazyload alt="这是关于图片的描述，罗小黑太可爱了awsl"><br>PS：图片大多依赖图床，你可以使用Typecho或者博客程序自带的附件来直接上传，也可以通过图床（例如<a target="_blank" rel="noopener" href="https://sm.ms/">sm.ms</a>）来上传并插入</p>
+<h2 id="Markdown-高级用法"><a href="#Markdown-高级用法" class="headerlink" title="Markdown 高级用法"></a>Markdown 高级用法</h2><p>以上应该就能满足绝大部分的富文本处理了，接下来我将给出个人整理的高级版Markdown使用方法（高能预警）：</p>
+<h3 id="斜体加粗"><a href="#斜体加粗" class="headerlink" title="斜体加粗"></a>斜体加粗</h3><p>在内容前后加三个***就是斜体加粗。</p>
+<ul>
+<li><strong>例子</strong></li>
+</ul>
+<p><em><strong>斜体加粗</strong></em></p>
+<h3 id="分割线"><a href="#分割线" class="headerlink" title="分割线"></a>分割线</h3><p>分割线就是在空白的一行连续输入三个*或者-。</p>
+<ul>
+<li><strong>例子</strong></li>
+</ul>
+<hr>
+<h3 id="区块引用"><a href="#区块引用" class="headerlink" title="区块引用"></a>区块引用</h3><p>区块引用是空行输入三个```，最后再用三个点号结束，中间包含的内容就是区块引用。（第一个三个点之前可以加语言标识符，部分渲染器可以自动语法高亮）</p>
+<ul>
+<li><strong>例子</strong></li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs"><br>这是引用测试<br><br>hhhh<br><br></code></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="行内代码"><a href="#行内代码" class="headerlink" title="行内代码"></a>行内代码</h3><p>如果只是一行代码，使用一个`包含起来即可，如果是多行代码，建议用区块引用。</p>
+<ul>
+<li><strong>例子</strong></li>
+</ul>
+<p><code>这是代码</code></p>
+<hr>
+<h3 id="无序列表"><a href="#无序列表" class="headerlink" title="无序列表"></a>无序列表</h3><p>在每行开头使用一个*、+、-，再加上一个空格，就会形成无序列表。</p>
+<ul>
+<li><strong>例子</strong></li>
+</ul>
+<ul>
+<li><p>1</p>
+</li>
+<li><p>2</p>
+</li>
+</ul>
+<hr>
+<h3 id="有序列表"><a href="#有序列表" class="headerlink" title="有序列表"></a>有序列表</h3><p>使用数字加.号，再空格，加上后面的内容，就会形成有序列表。</p>
+<ul>
+<li><strong>例子</strong></li>
+</ul>
+<ol>
+<li><p>123</p>
+</li>
+<li><p>369</p>
+</li>
+<li><p>456</p>
+</li>
+<li><p>489</p>
+</li>
+</ol>
+<hr>
+<h3 id="表格"><a href="#表格" class="headerlink" title="表格"></a>表格</h3><p>表格按照以下三部分组成：</p>
+<ul>
+<li><p>表头</p>
+</li>
+<li><p>占位分隔</p>
+</li>
+<li><p>内容</p>
+</li>
+<li><p>符号：|，- |—|(表示标题)</p>
+</li>
+</ul>
+<ul>
+<li><strong>例子</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>星期一</th>
+<th>星期二</th>
+<th>星期三</th>
+<th>星期四</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="扩展篇"><a href="#扩展篇" class="headerlink" title="扩展篇"></a>扩展篇</h2><p>严格来说这不算标准的Markdown，但很多渲染器都支持这些新的，我就在这列举一些吧。（以下个人博客无法渲染，因此使用者请找兼容这些语法的渲染器去使用）</p>
+<h3 id="LaTeX"><a href="#LaTeX" class="headerlink" title="LaTeX"></a>LaTeX</h3><p>$ 表示行内公式：</p>
+<p>质能守恒方程可以用一个很简洁的方程式 $E=mc^2$ 来表达。<br>10.2. $$ 表示整行公式：</p>
+<p>$$\sum_{i=1}^n a_i=0$$<br>$$f(x_1,x_x,\ldots,x_n)= x_1^2+ x_2^2+ \cdots + x_n^2 $$<br>$$\sum^{j-1}<em>{k=0}{\widehat{\gamma}</em>{kj} z_k}$$</p>
+<p>访问 MathJax 参考更多使用方法。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/tutorial/">tutorial</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01/09/how-to-make-a-jit-scvm/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">如何实现一个带JIT的Scratch虚拟机</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"c810686d909425173e60","clientSecret":"dfe313545a8787fb84f3d63ec993e938f131081b","repo":"simonshiki.github.io","owner":"SimonShiki","admin":["SimonShiki"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: 'cbf86e3454449c60d1420b1f1eb801ff'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Powered by</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

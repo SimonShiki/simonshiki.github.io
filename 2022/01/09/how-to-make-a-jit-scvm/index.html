@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.jpg">
+  <link rel="icon" href="/img/favicon.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="SimonShiki">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="众所周知，由于 Scratch 原生虚拟机的实现非常暴力，因此 Scratch 的虚拟机一直是众多有高性能需求的 Scratch 作品的噩梦。你甚至能看到在极少的循环内执行延迟就已达到了惊人的 300ms。为此，各路 Scratcher 争相拿出了解决方案（例如 forkphorus, TurboWarp 等），其中最普遍的思路就是使用浏览器自带的 JavaScript 引擎来把积木转换成原生代码">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何实现一个带JIT的Scratch虚拟机">
+<meta property="og:url" content="https://blog.shiki.online/2022/01/09/how-to-make-a-jit-scvm/index.html">
+<meta property="og:site_name" content="Simon 的博客">
+<meta property="og:description" content="众所周知，由于 Scratch 原生虚拟机的实现非常暴力，因此 Scratch 的虚拟机一直是众多有高性能需求的 Scratch 作品的噩梦。你甚至能看到在极少的循环内执行延迟就已达到了惊人的 300ms。为此，各路 Scratcher 争相拿出了解决方案（例如 forkphorus, TurboWarp 等），其中最普遍的思路就是使用浏览器自带的 JavaScript 引擎来把积木转换成原生代码">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s6.jpg.cm/2021/11/12/Iae5CH.gif">
+<meta property="article:published_time" content="2022-01-09T20:46:21.000Z">
+<meta property="article:modified_time" content="2022-11-06T14:00:28.519Z">
+<meta property="article:author" content="SimonShiki">
+<meta property="article:tag" content="tutorial">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s6.jpg.cm/2021/11/12/Iae5CH.gif">
+  
+  
+  <title>如何实现一个带JIT的Scratch虚拟机 | Simon 的博客</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"blog.shiki.online","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"><link rel="alternate" href="/atom.xml" title="Simon 的博客" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Simon 的博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/post.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="如何实现一个带JIT的Scratch虚拟机">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-01-09 20:46" pubdate>
+        2022年1月9日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.2k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      19 分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">如何实现一个带JIT的Scratch虚拟机</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2022年11月6日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <p>众所周知，由于 Scratch 原生虚拟机的实现非常暴力，因此 Scratch 的虚拟机一直是众多有高性能需求的 Scratch 作品的噩梦。你甚至能看到在极少的循环内执行延迟就已达到了惊人的 300ms。为此，各路 Scratcher 争相拿出了解决方案（例如 forkphorus, TurboWarp 等），其中最普遍的思路就是使用浏览器自带的 JavaScript 引擎来把积木转换成原生代码再运行。（当然也有用其他语言重写虚拟机的，本篇不细讲）本文将结合本人编写 JIT 功能的经验，谈谈如何在原有的 Scratch 虚拟机上添加一个 JIT 功能。<br><img src="https://s6.jpg.cm/2021/11/12/Iae5CH.gif" srcset="/img/loading.gif" lazyload><br><em>PS：本文仅提供思路，具体代码需要各位读者自行实践。</em></p>
+<h2 id="怎么生成"><a href="#怎么生成" class="headerlink" title="怎么生成"></a>怎么生成</h2><p>我们分析源码可得，Scratch 的运行逻辑大概是这样的：</p>
+
+<pre>
+<code class="mermaid" >
+graph LR
+    A(Runtime) -->|从 target 读取 block 创建| B(Thread - FRESH)
+    B -->|开始运行| C[Thread - RUNNING]
+    C -->G[Execute]
+    C -->|进入“休息”时间| D[Thread - YIELD_TICK]
+    D -->|完成该线程的使命| E[Thread - DONE]
+    F(sequencer) -->|进行调度管理| C
+    F -->|进行调度管理| D
+    F -->|进行调度管理| E
+</code>
+</pre>
+<p>由以上流程我们可知，我们要抢先在线程进入运行环节前生成相关代码，所以我们要在生成完新鲜的 Thread 后立刻开始生成。<br>生成的最基本思路便是取出当前 Thread 的积木容器，并挨个遍历积木并生成相应代码。比如走( )步积木的实现就理所应当的如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></div></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Motion</span> </span>&#123;<br>　　<span class="hljs-comment">// ...</span><br>　　moveSteps (args, util) &#123;<br>　　　　<span class="hljs-keyword">const</span> steps = Cast.toNumber(args.STEPS);<br>　　　　<span class="hljs-keyword">const</span> radians = MathUtil.degToRad(<span class="hljs-number">90</span> - util.target.direction);<br>　　　　<span class="hljs-keyword">const</span> dx = steps * <span class="hljs-built_in">Math</span>.cos(radians);<br>　　　　<span class="hljs-keyword">const</span> dy = steps * <span class="hljs-built_in">Math</span>.sin(radians);<br>　　　　util.target.setXY(util.target.x + dx, util.target.y + dy);<br>　　&#125;<br>　　<span class="hljs-comment">// ...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>按照上面的代码生成，相信明眼人都能看出问题。我们生成的代码返回的是字符串而不是函数，因此参数是不能直接传过去的。所以我们的思路是使用一个函数来实现对参数的处理：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Motion</span> </span>&#123;<br>　　<span class="hljs-comment">//...</span><br>　　<span class="hljs-attr">motion_movesteps</span>: <span class="hljs-function">(<span class="hljs-params">args</span>) =&gt;</span> &#123;<br>        　　<span class="hljs-keyword">const</span> steps = args.STEPS;<br>        　　<span class="hljs-keyword">return</span> <span class="hljs-string">`</span><br><span class="hljs-string">　　　　　　const radians = 　MathUtil.degToRad(90 - util.target.direction);</span><br><span class="hljs-string">　　　　　　const dx = <span class="hljs-subst">$&#123;steps&#125;</span> * Math.cos(radians);</span><br><span class="hljs-string">　　　　　　const dy = <span class="hljs-subst">$&#123;steps&#125;</span> * Math.sin(radians);</span><br><span class="hljs-string">　　　　　　util.target.setXY(util.target.x + dx, util.target.y + dy);</span><br><span class="hljs-string">　　　　`</span><br>&#125;<br>    <span class="hljs-comment">//...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>至于内部运行需要的 util，则在生成时使用前缀的方式，运行时作为参数传入即可。</p>
+<h3 id="运行时刷新"><a href="#运行时刷新" class="headerlink" title="运行时刷新"></a>运行时刷新</h3><p>像以上代码，运行时间短的积木可以忽略，但运行时间长就会阻塞整个编辑器，造成无休止的卡顿。为此我们需要引入<code>Generator Function</code>来防止这种情况的出现。<br>GeneratorFunction 是一种允许控制运行流程的函数，在函数内可以使用<code>yield [value];</code>的方式暂停函数的运行并等待调用方的下一步操作。<br>于是我们就可以将控制积木类的重复执行以以下的方式呈现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Control</span> </span>&#123;<br>　　<span class="hljs-attr">control_forever</span>: <span class="hljs-function">(<span class="hljs-params">args</span>) =&gt;</span> &#123;<br>　　　　<span class="hljs-keyword">const</span> SUBSTACK = args.SUBSTACK;<br>　　　　<span class="hljs-keyword">return</span> <span class="hljs-string">`</span><br><span class="hljs-string">　　　　　　while(true) &#123;</span><br><span class="hljs-string">　　　　　　　　<span class="hljs-subst">$&#123;SUBSTACK&#125;</span></span><br><span class="hljs-string">　　　　　　　　yield;</span><br><span class="hljs-string">　　　　　　&#125;</span><br><span class="hljs-string">　　　　`</span><br>　　&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>之后在运行时由调度器进行调度即可, REPORTER 同理。</p>
+<h2 id="没有对应-JIT-代码的积木"><a href="#没有对应-JIT-代码的积木" class="headerlink" title="没有对应 JIT 代码的积木"></a>没有对应 JIT 代码的积木</h2><p>本着最大化效率和确保兼容性的理念，我们不可能为了一个线程中的一个没有对应 JIT 代码的积木而放弃整个线程的编译。所以我们需要在生成时记录下这个没有对应 JIT 代码的积木并跳转到下一个有对应 JIT 代码的积木进行编译。</p>
+<h2 id="不刷新屏幕的自定义积木"><a href="#不刷新屏幕的自定义积木" class="headerlink" title="不刷新屏幕的自定义积木"></a>不刷新屏幕的自定义积木</h2><p>我们可以通过在生成该自定义积木时传参，控制要不要 yield 即可。<br>（PS：不会真的有人在定义里写高耗时积木吧）</p>
+<h2 id="热更新"><a href="#热更新" class="headerlink" title="热更新"></a>热更新</h2><p>像 Scratch 这种按积木执行的模式是非常难在 JIT 在确保实时热更新的。因此我们只能在每次执行完这个编译片段（或遇到 yield 的情况）时返回当前的 blockID 并检测更新才能一定程度上确保热更新。由于 Scratch 是单线程的，且只有在高耗时积木中才会使用 yield（低耗时积木你感受不出来（不是），因此该问题不会有太大影响。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>以上仅为目前本人的实现思路，因此很可能存在谬误。如果你在编写过程中发现存在错误，请发邮件予以指正！</p>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a target="_blank" rel="noopener" href="https://steve-xmh.github.io/blog/2020/05/16/scratchvmjit/">SteveXMH - 关于如何优化 Scratch 虚拟机的运行速度思路</a><br><a target="_blank" rel="noopener" href="https://github.com/TurboWarp/scratch-vm/">TurboWarp 源码</a><br><a target="_blank" rel="noopener" href="https://github.com/Clipteam/clipcc-vm/">ClipCC 源码</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/tutorial/">tutorial</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/01/09/clipcc/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ClipCC - 轻量，强大的二开Scratch编辑器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/01/10/markdown/">
+                        <span class="hidden-mobile">Markdown - 简单富文本语言介绍</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments" lazyload>
+                
+                  
+                
+                
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#gitalk-container', function() {
+      Fluid.utils.createCssLink('/css/gitalk.css')
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', function() {
+        var options = Object.assign(
+          {"clientID":"c810686d909425173e60","clientSecret":"dfe313545a8787fb84f3d63ec993e938f131081b","repo":"simonshiki.github.io","owner":"SimonShiki","admin":["SimonShiki"],"language":"zh-CN","labels":["Gitalk"],"perPage":10,"pagerDirection":"last","distractionFreeMode":false,"createIssueManually":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token"},
+          {
+            id: '5ee95e7324b9629322d896e224c819e4'
+          }
+        )
+        var gitalk = new Gitalk(options);
+        gitalk.render('gitalk-container');
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Powered by</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js" ></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({"theme":"default"});
+    }
+  </script>
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
