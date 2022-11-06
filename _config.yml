@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 楠的博客
+title: Simon 的博客
 subtitle: "SimonShiki's blog"
 description: '本来无一物，何处惹尘埃'
 keywords:
@@ -13,7 +13,7 @@ timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://simonshiki.github.io/
+url: https://blog.shiki.online/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
